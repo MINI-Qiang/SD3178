@@ -49,6 +49,55 @@ void setRTC(uint8_t &Year,uint8_t &Month,uint8_t &Day,uint8_t &Week,uint8_t &Hou
 
 
 
+//I2C可写锁
+void SD3178::enableI2cWrite(bool mode)
+{
+    //WRTC1 : 0X10 7  
+    //WRTC2 : 0X0f 2
+    //WRTC3 : 0X0f 7
+
+    if(mode == true)
+    {
+        //写使能(先1再23)
+        //先读取寄存器原值
+        uint8_t temp[2];
+        i2c_read(0X0f, sizeof(temp), temp);  //读取2个寄存器的原值 0x0f 0x10
+
+        //修改寄存器值,再写入
+        bitWrite(temp[1],7,1);  //修改WRTC1
+        i2c_write(0x10,1,&temp[1]);  //写入数据
+
+        //再修改 WRTC2 WRTC3
+        bitWrite(temp[0],2,1);
+        bitWrite(temp[0],7,1);
+        i2c_write(0x0f,1,&temp[0]);  //写入数据
+    }
+    else
+    {
+        //写禁止(先23再1)
+
+        //读取寄存器原值
+        uint8_t temp[2];
+        i2c_read(0X0f, sizeof(temp), temp);  //读取2个寄存器的原值 0x0f 0x10
+
+        //设置 WRTC2 WRTC3
+        bitWrite(temp[0],2,0);
+        bitWrite(temp[0],7,0);
+        i2c_write(0x0f,1,&temp[0]);  //写入数据
+
+        //再设置 WRTC1
+        bitWrite(temp[1],7,0);  //修改WRTC1
+        i2c_write(0x10,1,&temp[1]);  //写入数据
+
+    }
+}
+
+
+
+//
+
+
+
 // 温度获取
 int8_t SD3178::temperature()
 {
@@ -69,6 +118,8 @@ int16_t SD3178::batVal()
 }
 
 // 底层
+
+//i2c读取
 void SD3178::i2c_read(uint8_t addr, uint8_t len, uint8_t *Data)
 {
     // 超时逻辑
@@ -93,10 +144,18 @@ void SD3178::i2c_read(uint8_t addr, uint8_t len, uint8_t *Data)
     }
     Wire.endTransmission(); // 结束总线
 }
-void SD3178::i2c_write(uint8_t addr, uint8_t data)
+//I2C写入
+void SD3178::i2c_write(uint8_t addr,uint8_t len,uint8_t *Data)
 {
-}
 
+    Wire.beginTransmission(I2C_ADDR);   //设备地址
+    Wire.write(addr);   //寄存器地址
+    for(uint8_t number =0;number<len;number++)  //写入
+    {
+        Wire.write(*(Data + number));
+    }
+    Wire.endTransmission(); // 结束
+}
 
 
 //解码
