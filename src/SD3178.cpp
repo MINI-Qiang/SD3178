@@ -14,10 +14,25 @@ void SD3178::begin()
 }
 //实时时钟
 //读取
-void getRTC(uint8_t &Year,uint8_t &Month,uint8_t &Day,uint8_t &Week,uint8_t &Hour,uint8_t &Minute,uint8_t &Second)
+void SD3178::getRTC(uint8_t &Year,uint8_t &Month,uint8_t &Day,uint8_t &Week,uint8_t &Hour,uint8_t &Minute,uint8_t &Second)
 {
-    
+    uint8_t addr = 0x00;
+    uint8_t temp[7];
+    i2c_read(addr, 7, temp); //获取数据
+    Second = DeBCD(temp[0]);
+    Minute = DeBCD(temp[1]);
+
+    //小时处理
+
+    Hour = DeBCD(temp[2]);
+    Week = DeBCD(temp[3]);
+    Day = DeBCD(temp[4]);
+    Month = DeBCD(temp[5]);
+    Year = DeBCD(temp[6]);
+
+
 }
+/*
 uint8_t getSecond();
 uint8_t getMinute();
 uint8_t getHour();
@@ -25,10 +40,12 @@ uint8_t getWeek();
 uint8_t getDay();
 uint8_t getMonth();
 uint8_t getYear();
-
+*/
 //写入
-void setRTC();
+void setRTC(uint8_t &Year,uint8_t &Month,uint8_t &Day,uint8_t &Week,uint8_t &Hour,uint8_t &Minute,uint8_t &Second)
+{
 
+}
 
 
 
@@ -79,14 +96,17 @@ void SD3178::i2c_read(uint8_t addr, uint8_t len, uint8_t *Data)
 void SD3178::i2c_write(uint8_t addr, uint8_t data)
 {
 }
-uint8_t SD3178::enbcd(uint8_t bcd_buf) // bcd码解码
-{
-    uint32_t sum = 0;
-    uint8_t temp = 0;
-    sum *= 100ul;
-    temp = (bcd_buf & 0xf);
-    temp += ((bcd_buf >> 4) & 0xf) * 10u;
-    sum += temp;
 
-    return sum;
+
+
+//解码
+int SD3178::DeBCD( int bcd)  
+{
+  return (bcd + (bcd / 10) * 6);
+}
+
+//编码
+int SD3178::EnBCD(int decimal)
+{
+  return (decimal - (decimal >> 4) * 6);
 }

@@ -16,7 +16,7 @@ public:
     void begin();
 
     // 核心功能
-    
+
     // 实时时钟
     // 读取
     void getRTC(uint8_t &Year, uint8_t &Month, uint8_t &Day, uint8_t &Week, uint8_t &Hour, uint8_t &Minute, uint8_t &Second);
@@ -38,7 +38,8 @@ public:
     // 链路底层通讯
     void i2c_read(uint8_t addr, uint8_t len, uint8_t *Data);
     void i2c_write(uint8_t addr, uint8_t data);
-    uint8_t enbcd(uint8_t bcd_buf); // bcd码解码
+    int DeBCD(int bcd);     // bcd码解码
+    int EnBCD(int decimal); // bcd码编码
 };
 
 #endif
