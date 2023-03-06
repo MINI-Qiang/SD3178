@@ -68,6 +68,22 @@ bool SD3178::writeRTC(uint8_t Year, uint8_t Month, uint8_t Day, uint8_t Week, ui
 //写用户内存
 bool SD3178::writeRam(uint8_t addr,uint8_t *Data,uint8_t len)
 {
+    if(len>70)  //防止数据越界
+    {
+        len =70;
+    }
+    if(addr>70)
+    {
+        addr = 70;
+    }
+    uint8_t start_addr = 0x2c;  //起始内存地址
+
+    // 写使能
+    enableI2cWrite(true);  // 写入使能
+    i2c_write(start_addr + addr, len, Data); // 写寄存器
+
+    // 写禁止
+    enableI2cWrite(false); // 写入禁止
     
     return true;
 }
