@@ -6,13 +6,13 @@ void setup()
   //Wire.setSDA(PB11);
   rtc.begin();
   SerialUSB.begin(115200);
-  //rtc.setRTC(23,3,6,1,11,32,0);   //set time 
+  //rtc.writeRTC(23,3,6,1,11,32,0);   //set time 
 }
 
 void loop()
 {
   uint8_t Year, Month, Day, Week, Hour, Minute, Second;
-  rtc.getRTC(Year, Month, Day, Week, Hour, Minute, Second);   //get time
+  rtc.readRTC(Year, Month, Day, Week, Hour, Minute, Second);   //get time
   SerialUSB.print("20");
   SerialUSB.print(Year);   //年
   SerialUSB.print("-");
