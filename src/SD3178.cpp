@@ -42,9 +42,22 @@ uint8_t getMonth();
 uint8_t getYear();
 */
 //写入
-void setRTC(uint8_t &Year,uint8_t &Month,uint8_t &Day,uint8_t &Week,uint8_t &Hour,uint8_t &Minute,uint8_t &Second)
+void SD3178::setRTC(uint8_t Year,uint8_t Month,uint8_t Day,uint8_t Week,uint8_t Hour,uint8_t Minute,uint8_t Second)
 {
+    //写使能
+    enableI2cWrite(true);    //写入使能
+    uint8_t write_Data[7];  //写入数据缓存
+    write_Data[0] = EnBCD(Second);
+    write_Data[1] = EnBCD(Minute);
+    write_Data[2] = EnBCD(Hour);
+    write_Data[3] = EnBCD(Week);
+    write_Data[4] = EnBCD(Day);
+    write_Data[5] = EnBCD(Month);
+    write_Data[6] = EnBCD(Year);
 
+    i2c_write(0x00,sizeof(write_Data),write_Data);   //写寄存器
+    //写禁止
+    enableI2cWrite(false);  //写入禁止
 }
 
 
@@ -159,13 +172,13 @@ void SD3178::i2c_write(uint8_t addr,uint8_t len,uint8_t *Data)
 
 
 //解码
-int SD3178::DeBCD( int bcd)  
+int SD3178::EnBCD( int bcd)  
 {
   return (bcd + (bcd / 10) * 6);
 }
 
 //编码
-int SD3178::EnBCD(int decimal)
+int SD3178::DeBCD(int decimal)
 {
   return (decimal - (decimal >> 4) * 6);
 }

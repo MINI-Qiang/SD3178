@@ -29,7 +29,7 @@ public:
     uint8_t getYear();
 
     // 写入
-    void setRTC();
+    void setRTC(uint8_t Year,uint8_t Month,uint8_t Day,uint8_t Week,uint8_t Hour,uint8_t Minute,uint8_t Second);
 
     // 其他功能
     int8_t temperature(); // 温度
