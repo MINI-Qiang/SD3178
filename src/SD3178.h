@@ -9,11 +9,12 @@ class SD3178
 private:
     /* data */
     uint8_t I2C_ADDR = 0x32;
-
+	TwoWire *_Wire;
 public:
     SD3178(/* args */);
     ~SD3178();
     void begin();
+	void begin(TwoWire &_wire);
 
     // 核心功能
     void enableI2cWrite(bool mode);  //寄存器写入使能

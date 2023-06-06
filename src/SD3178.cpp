@@ -10,7 +10,15 @@ SD3178::~SD3178()
 
 void SD3178::begin()
 {
-    Wire.begin();
+	
+	_Wire = &Wire; 
+    _Wire->begin();
+}
+
+void SD3178::begin(TwoWire &_wire)
+{
+	_Wire = &_wire; 
+    _Wire->begin();
 }
 // 实时时钟
 // 读取
@@ -32,15 +40,6 @@ void SD3178::readRTC(uint8_t &Year, uint8_t &Month, uint8_t &Day, uint8_t &Week,
     Year = DeBCD(temp[6]);
 }
 
-/*
-uint8_t getSecond();
-uint8_t getMinute();
-uint8_t getHour();
-uint8_t getWeek();
-uint8_t getDay();
-uint8_t getMonth();
-uint8_t getYear();
-*/
 
 // 写入
 bool SD3178::writeRTC(uint8_t Year, uint8_t Month, uint8_t Day, uint8_t Week, uint8_t Hour, uint8_t Minute, uint8_t Second)
@@ -177,35 +176,35 @@ void SD3178::i2c_read(uint8_t addr, uint8_t len, uint8_t *Data)
     uint32_t startTime = millis();
     uint32_t timeOut = 200;
     // 先写入逻辑地址
-    Wire.beginTransmission(I2C_ADDR);
-    Wire.write(addr);
-    Wire.endTransmission(false); // 重新起始信号
+    _Wire->beginTransmission(I2C_ADDR);
+    _Wire->write(addr);
+    _Wire->endTransmission(false); // 重新起始信号
     // 获取返回数据
-    Wire.requestFrom(I2C_ADDR, len);
+    _Wire->requestFrom(I2C_ADDR, len);
     uint8_t datalen = 0;     // 获取计数器
-    while (Wire.available()) // slave may send less than requested
+    while (_Wire->available()) // slave may send less than requested
     {
-        *(Data + datalen) = Wire.read();
+        *(Data + datalen) = _Wire->read();
         datalen++;
         if (millis() - startTime > timeOut) // 超时管理
         {
-            Wire.endTransmission(); // 结束总线
+            _Wire->endTransmission(); // 结束总线
             return;
         }
     }
-    Wire.endTransmission(); // 结束总线
+    _Wire->endTransmission(); // 结束总线
 }
 // I2C写入
 void SD3178::i2c_write(uint8_t addr, uint8_t len, uint8_t *Data)
 {
 
-    Wire.beginTransmission(I2C_ADDR);                // 设备地址
-    Wire.write(addr);                                // 寄存器地址
+    _Wire->beginTransmission(I2C_ADDR);                // 设备地址
+    _Wire->write(addr);                                // 寄存器地址
     for (uint8_t number = 0; number < len; number++) // 写入
     {
-        Wire.write(*(Data + number));
+        _Wire->write(*(Data + number));
     }
-    Wire.endTransmission(); // 结束
+    _Wire->endTransmission(); // 结束
 }
 
 // 编码
