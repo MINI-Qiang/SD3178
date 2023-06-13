@@ -33,8 +33,11 @@ public:
     bool writeRTC(uint8_t Year,uint8_t Month,uint8_t Day,uint8_t Week,uint8_t Hour,uint8_t Minute,uint8_t Second);
 
     // 其他功能
+	void chargingEnabled(bool Enabled,uint8_t current);  //充电使能  0:10k  1:5k  2:2k
+	
+	
     int8_t temperature(); // 温度
-    int16_t batVal();     // 电池电压
+    int16_t vbat();     // 电池电压
 	
 	
 	int8_t lowTemperature(); //历史低温值
@@ -51,6 +54,7 @@ public:
     // 链路底层通讯
     void i2c_read(uint8_t addr, uint8_t len, uint8_t *Data);
     void i2c_write(uint8_t addr,uint8_t len,uint8_t *Data);
+	void i2c_write(uint8_t addr, uint8_t Data);
     int DeBCD(int bcd);     // bcd码解码
     int EnBCD(int decimal); // bcd码编码
 };

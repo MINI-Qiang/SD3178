@@ -148,6 +148,37 @@ void SD3178::enableI2cWrite(bool mode)
     }
 }
 
+
+//充电使能
+void SD3178::chargingEnabled(bool Enabled,uint8_t current)
+{
+	uint8_t addr = 0x18;
+	
+	if(Enabled == 0)
+	{
+	// 写使能
+    enableI2cWrite(true);  // 写入使能
+	i2c_write(addr, 1, 0); // 写寄存器
+	// 写禁止
+    enableI2cWrite(false); // 写入禁止
+	}
+	else
+	{
+	if(current>2)
+	{
+		current = 2;
+	}
+	// 写使能
+    enableI2cWrite(true);  // 写入使能
+	i2c_write(addr,(current+0x80)); // 写寄存器
+	// 写禁止
+    enableI2cWrite(false); // 写入禁止
+	
+	}
+}
+
+
+
 // 温度获取
 int8_t SD3178::temperature()
 {
@@ -158,7 +189,7 @@ int8_t SD3178::temperature()
 }
 
 // 电池电压
-int16_t SD3178::batVal()
+int16_t SD3178::vbat()
 {
     uint8_t addr = 0x1A;
     uint8_t temp[2];
@@ -263,7 +294,7 @@ void SD3178::i2c_read(uint8_t addr, uint8_t len, uint8_t *Data)
     }
     _Wire->endTransmission(); // 结束总线
 }
-// I2C写入
+// I2C写入 数组
 void SD3178::i2c_write(uint8_t addr, uint8_t len, uint8_t *Data)
 {
 
@@ -275,6 +306,20 @@ void SD3178::i2c_write(uint8_t addr, uint8_t len, uint8_t *Data)
     }
     _Wire->endTransmission(); // 结束
 }
+//I2C写入 单字节
+void SD3178::i2c_write(uint8_t addr, uint8_t Data)
+{
+
+    _Wire->beginTransmission(I2C_ADDR);                // 设备地址
+    _Wire->write(addr);                                // 寄存器地址
+    _Wire->write(Data);
+    _Wire->endTransmission(); // 结束
+}
+
+
+
+
+
 
 // 编码
 int SD3178::EnBCD(int bcd)
