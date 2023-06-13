@@ -167,7 +167,76 @@ int16_t SD3178::batVal()
     return bat_val * 10; // mV output
 }
 
-// 底层
+
+
+//历史低温值
+int8_t SD3178::lowTemperature()
+{
+    uint8_t addr = 0x1E;
+    uint8_t temp[1];
+    i2c_read(addr, 1, temp);
+    return (int8_t)temp[0];
+}
+
+
+//历史高温值
+int8_t SD3178::hihgTemperature()
+{
+    uint8_t addr = 0x1F;
+    uint8_t temp[1];
+    i2c_read(addr, 1, temp);
+    return (int8_t)temp[0];
+}
+
+//读取历史低温时间
+void SD3178::readLowTemperatureRTC(uint8_t &Year, uint8_t &Month, uint8_t &Day, uint8_t &Week, uint8_t &Hour, uint8_t &Minute)
+{
+    uint8_t addr = 0x20;
+    uint8_t temp[6];
+    i2c_read(addr, 6, temp); // 获取数据
+    Minute = DeBCD(temp[0]);
+    // 小时处理 
+    uint8_t _Hour = temp[1];   //读取适合,先进行修改,再解码传出
+    bitWrite(_Hour,7,0);   //删除24小时标记位
+    Hour = DeBCD(_Hour);
+    
+    Week = DeBCD(temp[2]);
+    Day = DeBCD(temp[3]);
+    Month = DeBCD(temp[4]);
+    Year = DeBCD(temp[5]);
+}
+
+//历史高温时间
+void SD3178::readHighTemperatureRTC(uint8_t &Year, uint8_t &Month, uint8_t &Day, uint8_t &Week, uint8_t &Hour, uint8_t &Minute)
+{
+    uint8_t addr = 0x26;
+    uint8_t temp[6];
+    i2c_read(addr, 6, temp); // 获取数据
+    Minute = DeBCD(temp[0]);
+    // 小时处理 
+    uint8_t _Hour = temp[1];   //读取适合,先进行修改,再解码传出
+    bitWrite(_Hour,7,0);   //删除24小时标记位
+    Hour = DeBCD(_Hour);
+    
+    Week = DeBCD(temp[2]);
+    Day = DeBCD(temp[3]);
+    Month = DeBCD(temp[4]);
+    Year = DeBCD(temp[5]);
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+// ===============底层=======================
 
 // i2c读取
 void SD3178::i2c_read(uint8_t addr, uint8_t len, uint8_t *Data)

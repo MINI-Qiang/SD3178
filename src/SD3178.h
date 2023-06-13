@@ -35,6 +35,13 @@ public:
     // 其他功能
     int8_t temperature(); // 温度
     int16_t batVal();     // 电池电压
+	
+	
+	int8_t lowTemperature(); //历史低温值
+	int8_t hihgTemperature();//历史高温值
+	void readLowTemperatureRTC(uint8_t &Year, uint8_t &Month, uint8_t &Day, uint8_t &Week, uint8_t &Hour, uint8_t &Minute); //历史低温时间
+	void readHighTemperatureRTC(uint8_t &Year, uint8_t &Month, uint8_t &Day, uint8_t &Week, uint8_t &Hour, uint8_t &Minute);//历史高温时间
+	
 
     //用户存储器 70字节ram 0-69
     bool writeRam(uint8_t addr,uint8_t *Data,uint8_t len);  
